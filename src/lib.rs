@@ -497,6 +497,34 @@ impl Client {
         let args = prompt.into();
         self.post_sync(&format!("engines/{}/completions", args.engine), args)
     }
+
+    /// Get predicted completion of the prompt
+    ///
+    /// # Errors
+    ///  - `Error::APIError` if the api returns an error
+    #[cfg(feature = "async")]
+    pub async fn complete_chat_prompt(
+        &self,
+        prompt: impl Into<api::CompletionArgs>,
+    ) -> Result<api::Completion> {
+        let args = prompt.into();
+        Ok(self
+            .post(&format!("engines/{}/chat/completions", args.engine), args)
+            .await?)
+    }
+
+    /// Get predicted completion of the prompt synchronously
+    ///
+    /// # Error
+    /// - `Error::APIError` if the api returns an error
+    #[cfg(feature = "sync")]
+    pub fn complete_chat_prompt_sync(
+        &self,
+        prompt: impl Into<api::CompletionArgs>,
+    ) -> Result<api::Completion> {
+        let args = prompt.into();
+        self.post_sync(&format!("engines/{}/chat/completions", args.engine), args)
+    }
 }
 
 // TODO: add a macro to de-boilerplate the sync and async tests
